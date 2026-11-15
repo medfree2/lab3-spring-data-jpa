@@ -1,0 +1,79 @@
+newman
+
+Lab 3 — API JPA
+
+→ Créer une catégorie
+  POST http://localhost:8084/api/categories [201 Created, 229B, 163ms]
+  ✓  HTTP 201
+  ✓  Vérifier la réponse
+
+→ Créer un produit
+  POST http://localhost:8084/api/products [201 Created, 250B, 35ms]
+  ✓  HTTP 201
+  ✓  Vérifier la réponse
+
+→ Lire le produit
+  GET http://localhost:8084/api/products/1 [200 OK, 219B, 10ms]
+  ✓  HTTP 200
+  ✓  Vérifier la réponse
+
+→ Filtrer et trier
+  GET http://localhost:8084/api/products?categoryId=1&page=0&size=1&sort=price,desc [200 OK, 295B, 57ms]
+  ✓  HTTP 200
+  ✓  Vérifier la réponse
+
+→ Modifier le produit
+  PUT http://localhost:8084/api/products/1 [200 OK, 220B, 13ms]
+  ✓  HTTP 200
+  ✓  Vérifier la réponse
+
+→ Créer une commande
+  POST http://localhost:8084/api/orders [201 Created, 312B, 39ms]
+  ✓  HTTP 201
+  ✓  Vérifier la réponse
+
+→ Lire la commande
+  GET http://localhost:8084/api/orders/1 [200 OK, 279B, 10ms]
+  ✓  HTTP 200
+  ✓  Vérifier la réponse
+
+→ Refuser une ligne invalide
+  POST http://localhost:8084/api/orders [400 Bad Request, 270B, 27ms]
+  ✓  HTTP 400
+
+→ Protéger une ligne de commande
+  DELETE http://localhost:8084/api/products/1 [409 Conflict, 327B, 21ms]
+  ✓  HTTP 409
+
+→ Créer un produit temporaire
+  POST http://localhost:8084/api/products [201 Created, 258B, 6ms]
+  ✓  HTTP 201
+  ✓  Vérifier la réponse
+
+→ Supprimer le produit temporaire
+  DELETE http://localhost:8084/api/products/2 [204 No Content, 112B, 8ms]
+  ✓  HTTP 204
+
+→ Vérifier le produit absent
+  GET http://localhost:8084/api/products/2 [404 Not Found, 298B, 5ms]
+  ✓  HTTP 404
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                12 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                12 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 0 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                20 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 569ms                                      │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 1.01kB (approx)                           │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 32ms [min: 5ms, max: 163ms, s.d.: 42ms] │
+└────────────────────────────────────────────────────────────────┘

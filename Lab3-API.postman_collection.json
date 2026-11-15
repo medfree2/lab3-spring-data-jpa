@@ -1,0 +1,334 @@
+{
+  "info": {
+    "name": "Lab 3 — API JPA",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Créer une catégorie",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/categories",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Électronique\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.collectionVariables.set('categoryId', pm.response.json().id); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Créer un produit",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/products",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Clavier\",\n  \"price\": 199.9,\n  \"categoryId\": {{categoryId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().categoryId).to.eql(Number(pm.collectionVariables.get('categoryId'))); pm.collectionVariables.set('productId', pm.response.json().id); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lire le produit",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products/{{productId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().name).to.eql('Clavier'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filtrer et trier",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products?categoryId={{categoryId}}&page=0&size=1&sort=price,desc",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().content[0].id).to.eql(Number(pm.collectionVariables.get('productId'))); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Modifier le produit",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/products/{{productId}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Clavier Pro\",\n  \"price\": 250,\n  \"categoryId\": {{categoryId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().price).to.eql(250); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Créer une commande",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/orders",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 2\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().items[0]).to.include({quantity: 2, unitPrice: 250}); pm.collectionVariables.set('orderId', pm.response.json().id); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lire la commande",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/orders/{{orderId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.expect(pm.response.json().items[0].productId).to.eql(Number(pm.collectionVariables.get('productId'))); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refuser une ligne invalide",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/orders",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 0\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Protéger une ligne de commande",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/products/{{productId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Créer un produit temporaire",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/products",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Produit provisoire\",\n  \"price\": 20,\n  \"categoryId\": {{categoryId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "pm.test(\"Vérifier la réponse\", () => { pm.collectionVariables.set('temporaryId', pm.response.json().id); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supprimer le produit temporaire",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/products/{{temporaryId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 204\", () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vérifier le produit absent",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products/{{temporaryId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
